@@ -1,9 +1,16 @@
 from app import app
+from .db import get_connection, release_connection
 from flask import render_template, request, jsonify
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hi DS met voorkennis!"
+    conn = get_connection()
+    with conn.cursor() as cur:
+        query = "SELECT * FROM devices"
+        cur.execute(query)
+        devices = cur.fetchall()
+
+    return render_template("table.html", devices=devices)
 
 @app.route('/chart')
 def chart():
